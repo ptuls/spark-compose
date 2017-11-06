@@ -6,7 +6,7 @@ lazy val buildSettings = Seq(
   version := "0.0.1",
   scalaVersion := "2.11.8",
   libraryDependencies := Depend.dependencies,
-  mainClass in Compile := Some("com.compose.ds.Boot"),
+  mainClass in Compile := Some("com.compose.ds.example.WordCountMain"),
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
