@@ -1,6 +1,6 @@
-package com.canva.ds.example.core
+package com.compose.ds.example.core
 
-import com.canva.ds.example.error.SparkError
+import com.compose.ds.example.error.SparkError
 import org.apache.spark.sql.SparkSession
 
 import scalaz._

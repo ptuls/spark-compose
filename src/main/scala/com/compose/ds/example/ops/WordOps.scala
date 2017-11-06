@@ -1,6 +1,6 @@
-package com.canva.ds.example.ops
+package com.compose.ds.example.ops
 
-import com.canva.ds.example.core.SparkAction
+import com.compose.ds.example.core.SparkAction
 import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.sql.functions._
 

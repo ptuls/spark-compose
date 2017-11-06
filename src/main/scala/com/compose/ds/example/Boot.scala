@@ -1,7 +1,7 @@
-package com.canva.ds.example
+package com.compose.ds.example
 
-import com.canva.ds.example.error.{FileReadError, SessionCreateError, SparkError}
-import com.canva.ds.example.ops.WordOps
+import com.compose.ds.example.error.{FileReadError, SessionCreateError, SparkError}
+import com.compose.ds.example.ops.WordOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession

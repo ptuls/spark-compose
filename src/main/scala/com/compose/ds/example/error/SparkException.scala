@@ -1,4 +1,4 @@
-package com.canva.ds.example.error
+package com.compose.ds.example.error
 
 sealed trait SparkError
 case class FileReadError(e: String) extends SparkError
