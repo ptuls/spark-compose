@@ -1,8 +1,10 @@
 package com.compose.ds.example.ops
 
 import com.compose.ds.example.core.SparkAction
-import org.apache.spark.sql.{Dataset, Row}
+import org.apache.spark.sql.{Dataset, Encoders}
 import org.apache.spark.sql.functions._
+
+case class WordFrequency(word: String, frequency: Long)
 
 object WordOps {
   // initial SparkOperation created using companion object
@@ -23,14 +25,16 @@ object WordOps {
     }
 
   // now get distinct words with count
-  def countOp: SparkAction[Dataset[Row]] =
+  def countOp: SparkAction[Dataset[WordFrequency]] =
     for (words <- wordsOp)
       yield
         words
           .groupBy("value")
           .agg(count("*") as "frequency")
           .orderBy(col("frequency").desc)
+          .withColumnRenamed("value", "word")
+          .as[WordFrequency](Encoders.product)
 
-  def topWordsOp(n: Int): SparkAction[Dataset[Row]] =
+  def topWordsOp(n: Int): SparkAction[Dataset[WordFrequency]] =
     countOp.map(_.limit(n))
 }
