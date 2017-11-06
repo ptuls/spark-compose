@@ -1,8 +1,9 @@
-package com.compose.ds.ops
+package com.compose.ds.example
 
 import com.compose.ds.core.SparkAction
-import org.apache.spark.sql.{Dataset, Encoders}
+import com.compose.ds.ops.SparkOps
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.{Dataset, Encoders}
 
 case class WordFrequency(word: String, frequency: Long)
 

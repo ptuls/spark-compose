@@ -1,11 +1,11 @@
 package com.compose.ds
 
 import com.compose.ds.error.{FileReadError, SessionCreateError, SparkError}
-import com.compose.ds.ops.WordOps
+import com.compose.ds.example.WordOps
+import com.compose.ds.ops.SparkOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
 
 import scalaz.{-\/, \/-}
 
@@ -15,10 +15,10 @@ object Boot extends LazyLogging {
 
     /* resource setup is separated from computation */
     val conf = new SparkConf().setMaster("local[2]").setAppName("Word count example")
-    val spark = SparkSession.builder().config(conf).getOrCreate()
+    val sparkSession = SparkOps.initSparkSession(conf)
 
     logger.info("Running word count...")
-    val topWordsMap = WordOps.topWordsOp(10).run(spark)
+    val topWordsMap = sparkSession.flatMap(sess => WordOps.topWordsOp(10).run(sess))
     topWordsMap match {
       case \/-(ds)  => ds.show()
       case -\/(e)   => logger.error(renderError(e))
@@ -26,7 +26,7 @@ object Boot extends LazyLogging {
     logger.info("Completed")
 
     /* teardown resources */
-    spark.stop()
+    sparkSession.map(sess => sess.stop())
   }
 
   def renderError(error: SparkError): String = {
