@@ -1,6 +1,6 @@
-package com.compose.ds.example.ops
+package com.compose.ds.ops
 
-import com.compose.ds.example.core.SparkAction
+import com.compose.ds.core.SparkAction
 import org.apache.spark.sql.{Dataset, Encoders}
 import org.apache.spark.sql.functions._
 

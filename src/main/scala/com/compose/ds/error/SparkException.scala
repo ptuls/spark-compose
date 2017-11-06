@@ -1,4 +1,4 @@
-package com.compose.ds.example.error
+package com.compose.ds.error
 
 sealed trait SparkError
 case class FileReadError(e: String) extends SparkError

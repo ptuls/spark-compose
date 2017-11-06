@@ -1,6 +1,6 @@
-package com.compose.ds.example.ops
+package com.compose.ds.ops
 
-import com.compose.ds.example.error.{FileReadError, SessionCreateError, SparkError}
+import com.compose.ds.error.{FileReadError, SessionCreateError, SparkError}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql._
 
