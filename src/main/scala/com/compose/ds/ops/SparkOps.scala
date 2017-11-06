@@ -29,4 +29,9 @@ object SparkOps {
     \/.fromTryCatchNonFatal(sess.read.textFile(fileName))
       .leftMap[SparkError](e => FileReadError(e.getMessage))
   }
+
+  def readLibSVM(fileName: String, sess: SparkSession): SparkError \/ Dataset[Row] = {
+    \/.fromTryCatchNonFatal(sess.read.format("libsvm").load(fileName))
+      .leftMap[SparkError](e => FileReadError(e.getMessage))
+  }
 }
