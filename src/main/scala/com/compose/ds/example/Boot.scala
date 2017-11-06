@@ -5,11 +5,14 @@ import com.compose.ds.example.ops.WordOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import org.apache.log4j.{Level, Logger}
 
 import scalaz.{-\/, \/-}
 
 object Boot extends LazyLogging {
   def main(args: Array[String]): Unit = {
+    Logger.getLogger("org").setLevel(Level.ERROR)
+
     /* resource setup is separated from computation */
     val conf = new SparkConf().setMaster("local[2]").setAppName("Word count example")
     val spark = SparkSession.builder().config(conf).getOrCreate()
