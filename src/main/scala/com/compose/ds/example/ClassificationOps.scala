@@ -28,13 +28,13 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
       transformedDataset.drop("features").withColumnRenamed("whitenedFeatures", "features")
     }
 
-  def trainingPipelineOp: SparkAction[LogisticRegressionModel] =
+  def trainingOp: SparkAction[LogisticRegressionModel] =
     for (whitenedDataset <- whitenDatasetOp(trainDatasetPath))
       yield new LogisticRegression().setRegParam(0.0).fit(whitenedDataset)
 
-  def predictPipelineOp: SparkAction[Dataset[Row]] =
+  def predictOp: SparkAction[Dataset[Row]] =
     for {
-      model <- trainingPipelineOp
+      model <- trainingOp
       whitenedPredictionDataset <- whitenDatasetOp(predictDatasetPath)
     } yield model.transform(whitenedPredictionDataset)
 
@@ -53,7 +53,7 @@ object ClassificationExampleMain extends LazyLogging {
     val predictionSetPath = "src/main/resources/sample_multiclass_prediction_data.txt"
     val predictions = sparkSession.flatMap(
       sess =>
-        new ClassificationOps(trainingSetPath, predictionSetPath).predictPipelineOp
+        new ClassificationOps(trainingSetPath, predictionSetPath).predictOp
           .run(sess))
     predictions match {
       case \/-(p) => p.show()
