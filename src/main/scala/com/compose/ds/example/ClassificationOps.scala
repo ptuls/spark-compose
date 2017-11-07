@@ -1,7 +1,7 @@
 package com.compose.ds.example
 
 import com.compose.ds.core.SparkAction
-import com.compose.ds.error.{FileReadError, SessionCreateError, SparkError}
+import com.compose.ds.error.ErrorHandler.renderError
 import com.compose.ds.ops.SparkOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
@@ -62,13 +62,4 @@ object ClassificationExampleMain extends LazyLogging {
     sparkSession.map(_.stop())
   }
 
-  def renderError(error: SparkError): String = {
-    error match {
-      case FileReadError(e) =>
-        s"Error reading file ${e.toString}; does it exist?"
-      case SessionCreateError(e) =>
-        s"Error creating Spark session: ${e.toString}"
-      case _ => "Unknown error"
-    }
-  }
 }
