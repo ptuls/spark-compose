@@ -7,8 +7,8 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.classification.{
-  LogisticRegression,
-  LogisticRegressionModel
+LogisticRegression,
+LogisticRegressionModel
 }
 import org.apache.spark.ml.feature.StandardScaler
 import org.apache.spark.sql.{Dataset, Row}
@@ -20,18 +20,7 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
     SparkAction(sess => SparkOps.readLibSVM(datasetPath, sess))
 
   def whitenDatasetOp(datasetPath: String): SparkAction[Dataset[Row]] =
-    for (dataset <- loadDatasetOp(datasetPath)) yield {
-      val stdScaler = new StandardScaler()
-        .setWithMean(true)
-        .setWithStd(true)
-        .setInputCol("features")
-        .setOutputCol("whitenedFeatures")
-      val stdScalerModel = stdScaler.fit(dataset)
-      val transformedDataset = stdScalerModel.transform(dataset)
-      transformedDataset
-        .drop("features")
-        .withColumnRenamed("whitenedFeatures", "features")
-    }
+    for (dataset <- loadDatasetOp(datasetPath)) yield whitenDataset(dataset)
 
   def trainingOp: SparkAction[LogisticRegressionModel] =
     for (whitenedDataset <- whitenDatasetOp(trainDatasetPath))
@@ -43,6 +32,18 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
       whitenedPredictionDataset <- whitenDatasetOp(predictDatasetPath)
     } yield model.transform(whitenedPredictionDataset)
 
+  def whitenDataset(dataset: Dataset[Row]): Dataset[Row] = {
+    val stdScaler = new StandardScaler()
+      .setWithMean(true)
+      .setWithStd(true)
+      .setInputCol("features")
+      .setOutputCol("whitenedFeatures")
+    val stdScalerModel = stdScaler.fit(dataset)
+    val transformedDataset = stdScalerModel.transform(dataset)
+    transformedDataset
+      .drop("features")
+      .withColumnRenamed("whitenedFeatures", "features")
+  }
 }
 
 object ClassificationExampleMain extends LazyLogging {
