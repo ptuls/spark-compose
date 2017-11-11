@@ -7,9 +7,10 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.classification.{
-LogisticRegression,
-LogisticRegressionModel
+  LogisticRegression,
+  LogisticRegressionModel
 }
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.StandardScaler
 import org.apache.spark.sql.{Dataset, Row}
 
@@ -32,6 +33,22 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
       whitenedPredictionDataset <- whitenDatasetOp(predictDatasetPath)
     } yield model.transform(whitenedPredictionDataset)
 
+  def modelScoringOp: SparkAction[Map[String, Double]] =
+    for {
+      predictions <- predictOp
+    } yield {
+      val accuracyScore = computeMetric(predictions, "accuracy")
+      val f1Score = computeMetric(predictions, "f1")
+      val weightedPrecisionScore =
+        computeMetric(predictions, "weightedPrecision")
+      val weightedRecallScore = computeMetric(predictions, "weightedRecall")
+
+      Map("accuracy" -> accuracyScore,
+          "f1" -> f1Score,
+          "weightedPrecision" -> weightedPrecisionScore,
+          "weightedRecall" -> weightedRecallScore)
+    }
+
   def whitenDataset(dataset: Dataset[Row]): Dataset[Row] = {
     val stdScaler = new StandardScaler()
       .setWithMean(true)
@@ -44,6 +61,16 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
       .drop("features")
       .withColumnRenamed("whitenedFeatures", "features")
   }
+
+  def computeMetric(dataset: Dataset[Row], metricName: String): Double = {
+    val multiclassClassificationEvaluator =
+      new MulticlassClassificationEvaluator()
+        .setPredictionCol("prediction")
+        .setLabelCol("label")
+        .setMetricName(metricName)
+    multiclassClassificationEvaluator.evaluate(dataset)
+  }
+
 }
 
 object ClassificationExampleMain extends LazyLogging {
@@ -63,13 +90,19 @@ object ClassificationExampleMain extends LazyLogging {
       "src/main/resources/sample_multiclass_prediction_data.txt"
     val predictions = sparkSession.flatMap(
       sess =>
-        new ClassificationOps(trainingSetPath, predictionSetPath).predictOp
-          .run(sess))
+        new ClassificationOps(trainingSetPath, predictionSetPath).modelScoringOp
+          .run(sess)
+    )
     predictions match {
-      case \/-(p) => p.show()
+      case \/-(s) => renderScores(s)
       case -\/(e) => logger.error(renderError(e))
     }
     sparkSession.map(_.stop())
   }
+
+  def renderScores(scoreMap: Map[String, Double]): Unit =
+    scoreMap.toList.foreach {
+      case (metric, score) => logger.info(s"$metric: ${score * 100.0} %")
+    }
 
 }
