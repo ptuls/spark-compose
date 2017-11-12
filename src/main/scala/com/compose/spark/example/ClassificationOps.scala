@@ -67,6 +67,8 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
 }
 
 object ClassificationExampleMain extends LazyLogging {
+  private val basePath: String = "src/main/resources/classification/"
+
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.ERROR)
 
@@ -77,10 +79,8 @@ object ClassificationExampleMain extends LazyLogging {
         .setAppName("Multiclass classification example")
     val sparkSession = SparkOps.initSparkSession(conf)
 
-    val trainingSetPath =
-      "src/main/resources/sample_multiclass_training_data.txt"
-    val predictionSetPath =
-      "src/main/resources/sample_multiclass_prediction_data.txt"
+    val trainingSetPath = basePath + "sample_multiclass_training_data.txt"
+    val predictionSetPath = basePath + "sample_multiclass_prediction_data.txt"
     val predictions = sparkSession.flatMap(
       sess =>
         new ClassificationOps(trainingSetPath, predictionSetPath).modelScoringOp
