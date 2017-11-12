@@ -1,8 +1,8 @@
-package com.compose.ds.example
+package com.compose.spark.example
 
-import com.compose.ds.core.SparkAction
-import com.compose.ds.error.ErrorHandler.renderError
-import com.compose.ds.ops.SparkOps
+import com.compose.spark.core.SparkAction
+import com.compose.spark.error.ErrorHandler.renderError
+import com.compose.spark.ops.SparkOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf

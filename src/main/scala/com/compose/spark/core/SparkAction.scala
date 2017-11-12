@@ -1,6 +1,6 @@
-package com.compose.ds.core
+package com.compose.spark.core
 
-import com.compose.ds.error.SparkError
+import com.compose.spark.error.SparkError
 import org.apache.spark.sql.SparkSession
 
 import scalaz._

@@ -1,4 +1,4 @@
-package com.compose.ds.error
+package com.compose.spark.error
 
 object ErrorHandler {
   def renderError(error: SparkError): String = {
