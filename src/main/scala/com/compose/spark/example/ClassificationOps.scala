@@ -95,7 +95,7 @@ object ClassificationExampleMain extends LazyLogging {
 
   def renderScores(scoreMap: Map[String, Double]): Unit =
     scoreMap.toList.foreach {
-      case (metric, score) => logger.info(s"$metric: ${score * 100.0} %")
+      case (metric, score) => logger.info(s"$metric: ${score * 100.0}%")
     }
 
 }
