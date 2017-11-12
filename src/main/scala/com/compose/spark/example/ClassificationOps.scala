@@ -37,16 +37,9 @@ class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
     for {
       predictions <- predictOp
     } yield {
-      val accuracyScore = computeMetric(predictions, "accuracy")
-      val f1Score = computeMetric(predictions, "f1")
-      val weightedPrecisionScore =
-        computeMetric(predictions, "weightedPrecision")
-      val weightedRecallScore = computeMetric(predictions, "weightedRecall")
-
-      Map("accuracy" -> accuracyScore,
-          "f1" -> f1Score,
-          "weightedPrecision" -> weightedPrecisionScore,
-          "weightedRecall" -> weightedRecallScore)
+      val metricList = List("accuracy", "f1", "weightedPrecision", "weightedRecall")
+      val metricScores = metricList.map(metric => computeMetric(predictions, metric))
+      metricList.zip(metricScores).toMap
     }
 
   def whitenDataset(dataset: Dataset[Row]): Dataset[Row] = {
