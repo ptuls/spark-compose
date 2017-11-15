@@ -1,17 +1,11 @@
 package com.compose.spark.ops
 
-import com.compose.spark.error.{FileReadError, SessionCreateError, SparkError}
-import org.apache.spark.SparkConf
+import com.compose.spark.error.{FileReadError, SparkError}
 import org.apache.spark.sql._
 
 import scalaz._
 
 object ReadOps {
-  def initSparkSession(conf: SparkConf): SparkError \/ SparkSession = {
-    \/.fromTryCatchNonFatal(SparkSession.builder().config(conf).getOrCreate())
-      .leftMap[SparkError](e => SessionCreateError(e.getMessage))
-  }
-
   def readParquet(fileName: String,
                   sess: SparkSession): SparkError \/ Dataset[Row] = {
     \/.fromTryCatchNonFatal(sess.read.parquet(fileName))

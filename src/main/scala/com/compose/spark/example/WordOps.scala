@@ -2,7 +2,7 @@ package com.compose.spark.example
 
 import com.compose.spark.core.SparkAction
 import com.compose.spark.error.ErrorHandler.renderError
-import com.compose.spark.ops.ReadOps
+import com.compose.spark.ops.{ReadOps, SparkOps}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
@@ -46,7 +46,7 @@ class WordOps(textFilePath: String) {
     countOp.map(_.limit(n))
 }
 
-object WordCountMain extends LazyLogging {
+object WordCountExampleMain extends LazyLogging {
   private val basePath = "src/main/resources/word-count/"
 
   def main(args: Array[String]): Unit = {
@@ -56,7 +56,7 @@ object WordCountMain extends LazyLogging {
     /* resource setup is separated from computation */
     val conf =
       new SparkConf().setMaster("local[2]").setAppName("Word count example")
-    val sparkSession = ReadOps.initSparkSession(conf)
+    val sparkSession = SparkOps.initSparkSession(conf)
 
     logger.info("Running word count...")
     val topWordsMap =

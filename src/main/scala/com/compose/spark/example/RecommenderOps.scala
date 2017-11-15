@@ -2,7 +2,7 @@ package com.compose.spark.example
 
 import com.compose.spark.core.SparkAction
 import com.compose.spark.error.ErrorHandler.renderError
-import com.compose.spark.ops.SparkOps
+import com.compose.spark.ops.{ReadOps, SparkOps}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
@@ -16,7 +16,7 @@ case class Rating(userId: Int, movieId: Int, rating: Float, timestamp: Long)
 
 class RecommenderOps(datasetPath: String) extends Serializable {
   def loadDatasetOp(datasetPath: String): SparkAction[Dataset[String]] =
-    SparkAction(sess => SparkOps.readText(datasetPath, sess))
+    SparkAction(sess => ReadOps.readText(datasetPath, sess))
 
   def parseDatasetOp: SparkAction[Dataset[Rating]] =
     for (rawDataset <- loadDatasetOp(datasetPath))
