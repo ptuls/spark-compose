@@ -30,7 +30,8 @@ object ReadOps {
       .leftMap[SparkError](e => FileReadError(e.getMessage))
   }
 
-  def readLibSVM(fileName: String, sess: SparkSession): SparkError \/ Dataset[Row] = {
+  def readLibSVM(fileName: String,
+                 sess: SparkSession): SparkError \/ Dataset[Row] = {
     \/.fromTryCatchNonFatal(sess.read.format("libsvm").load(fileName))
       .leftMap[SparkError](e => FileReadError(e.getMessage))
   }

@@ -32,7 +32,8 @@ object SparkAction {
   implicit def SparkActionMonad: Monad[SparkAction] =
     new Monad[SparkAction] {
       override def point[A](v: => A): SparkAction[A] = ok[A](v)
-      override def bind[A, B](m: SparkAction[A])(f: A => SparkAction[B]): SparkAction[B] = m.flatMap(f)
+      override def bind[A, B](m: SparkAction[A])(
+          f: A => SparkAction[B]): SparkAction[B] = m.flatMap(f)
     }
 }
 

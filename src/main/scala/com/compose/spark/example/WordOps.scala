@@ -46,7 +46,6 @@ class WordOps(textFilePath: String) {
     countOp.map(_.limit(n))
 }
 
-
 object WordCountMain extends LazyLogging {
   private val basePath = "src/main/resources/word-count/"
 
@@ -55,14 +54,16 @@ object WordCountMain extends LazyLogging {
     val path = basePath + "test.txt"
 
     /* resource setup is separated from computation */
-    val conf = new SparkConf().setMaster("local[2]").setAppName("Word count example")
+    val conf =
+      new SparkConf().setMaster("local[2]").setAppName("Word count example")
     val sparkSession = ReadOps.initSparkSession(conf)
 
     logger.info("Running word count...")
-    val topWordsMap = sparkSession.flatMap(sess => new WordOps(path).topWordsOp(10).run(sess))
+    val topWordsMap =
+      sparkSession.flatMap(sess => new WordOps(path).topWordsOp(10).run(sess))
     topWordsMap match {
-      case \/-(ds)  => ds.show()
-      case -\/(e)   => logger.error(renderError(e))
+      case \/-(ds) => ds.show()
+      case -\/(e)  => logger.error(renderError(e))
     }
     logger.info("Completed")
 
