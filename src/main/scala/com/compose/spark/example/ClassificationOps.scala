@@ -2,7 +2,7 @@ package com.compose.spark.example
 
 import com.compose.spark.core.SparkAction
 import com.compose.spark.error.ErrorHandler.renderError
-import com.compose.spark.ops.SparkOps
+import com.compose.spark.ops.ReadOps
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
@@ -18,7 +18,7 @@ import scalaz.{-\/, \/-}
 
 class ClassificationOps(trainDatasetPath: String, predictDatasetPath: String) {
   def loadDatasetOp(datasetPath: String): SparkAction[Dataset[Row]] =
-    SparkAction(sess => SparkOps.readLibSVM(datasetPath, sess))
+    SparkAction(sess => ReadOps.readLibSVM(datasetPath, sess))
 
   def whitenDatasetOp(datasetPath: String): SparkAction[Dataset[Row]] =
     for (dataset <- loadDatasetOp(datasetPath)) yield whitenDataset(dataset)
@@ -77,7 +77,7 @@ object ClassificationExampleMain extends LazyLogging {
       new SparkConf()
         .setMaster("local[4]")
         .setAppName("Multiclass classification example")
-    val sparkSession = SparkOps.initSparkSession(conf)
+    val sparkSession = ReadOps.initSparkSession(conf)
 
     val trainingSetPath = basePath + "sample_multiclass_training_data.txt"
     val predictionSetPath = basePath + "sample_multiclass_prediction_data.txt"

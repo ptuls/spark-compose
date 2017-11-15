@@ -6,7 +6,7 @@ import org.apache.spark.sql._
 
 import scalaz._
 
-object SparkOps {
+object ReadOps {
   def initSparkSession(conf: SparkConf): SparkError \/ SparkSession = {
     \/.fromTryCatchNonFatal(SparkSession.builder().config(conf).getOrCreate())
       .leftMap[SparkError](e => SessionCreateError(e.getMessage))
