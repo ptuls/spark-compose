@@ -81,12 +81,12 @@ object ClassificationExampleMain extends LazyLogging {
 
     val trainingSetPath = basePath + "sample_multiclass_training_data.txt"
     val predictionSetPath = basePath + "sample_multiclass_prediction_data.txt"
-    val predictions = sparkSession.flatMap(
+    val scores = sparkSession.flatMap(
       sess =>
         new ClassificationOps(trainingSetPath, predictionSetPath).modelScoringOp
           .run(sess)
     )
-    predictions match {
+    scores match {
       case \/-(s) => renderScores(s)
       case -\/(e) => logger.error(renderError(e))
     }
