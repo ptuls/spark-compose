@@ -18,3 +18,12 @@ To run the example, run
 ```
 sbt "runMain com.compose.ds.example.ClassificationExampleMain"
 ```
+
+## Recommender Pipeline Example
+
+In this example, a non-negative matrix factorization, collaborative filtering-based recommender system is applied on the [Movielens](https://grouplens.org/datasets/movielens/100k/) dataset. This includes scoring for the model at the end of the pipeline (in terms of root mean squared error).
+
+To run the example, run
+```
+sbt "runMain com.compose.ds.example.RecommenderExampleMain"
+```
