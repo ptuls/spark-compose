@@ -25,36 +25,42 @@ class RecommenderOps(datasetPath: String) extends Serializable {
         rawDataset.map(parseRating).as[Rating](Encoders.product)
       }
 
-  def splitDatasetOp(splitParam: Double): SparkAction[Array[Dataset[Rating]]] = for (ratings <- parseDatasetOp) yield
-    ratings.randomSplit(Array(splitParam, 1.0 - splitParam))
+  def splitDatasetOp(splitParam: Double): SparkAction[Array[Dataset[Rating]]] =
+    for (ratings <- parseDatasetOp)
+      yield ratings.randomSplit(Array(splitParam, 1.0 - splitParam))
 
-  def trainingAndTestingOp: SparkAction[Dataset[Row]] = for {
-     splitArray <- splitDatasetOp(0.8)
-     Array(trainDataset, testDataset) = splitArray
-  } yield {
-    val model = trainingOp(trainDataset)
-    testingOp(model, testDataset)
-  }
+  def trainingAndTestingOp: SparkAction[Dataset[Row]] =
+    for {
+      splitArray <- splitDatasetOp(0.8)
+      Array(trainDataset, testDataset) = splitArray
+    } yield {
+      val model = trainingOp(trainDataset)
+      testingOp(model, testDataset)
+    }
 
-  def evaluationOp: SparkAction[Double] = for (predictions <- trainingAndTestingOp) yield {
-    val evaluator = new RegressionEvaluator()
-      .setMetricName("rmse")
-      .setLabelCol("rating")
-      .setPredictionCol("prediction")
-    evaluator.evaluate(predictions)
-  }
+  def evaluationOp: SparkAction[Double] =
+    for (predictions <- trainingAndTestingOp) yield {
+      val evaluator = new RegressionEvaluator()
+        .setMetricName("rmse")
+        .setLabelCol("rating")
+        .setPredictionCol("prediction")
+      evaluator.evaluate(predictions)
+    }
 
-  def trainingOp(trainingDataset: Dataset[Rating]): ALSModel  = {
+  /* non-negative matrix factorization collaborative filtering */
+  def trainingOp(trainingDataset: Dataset[Rating]): ALSModel = {
     val als = new ALS()
       .setMaxIter(5)
       .setRegParam(0.01)
       .setUserCol("userId")
       .setItemCol("movieId")
       .setRatingCol("rating")
+      .setNonnegative(true)
     als.fit(trainingDataset)
   }
 
-  def testingOp(model: ALSModel, testDataset: Dataset[Rating]): Dataset[Row] = model.transform(testDataset)
+  def testingOp(model: ALSModel, testDataset: Dataset[Rating]): Dataset[Row] =
+    model.transform(testDataset)
 
   def parseRating(str: String): Rating = {
     val fields = str.split("::")
@@ -76,19 +82,17 @@ object RecommenderExampleMain extends LazyLogging {
     val conf =
       new SparkConf()
         .setMaster("local[4]")
-        .setAppName("Multiclass classification example")
+        .setAppName("Basic recommender")
     val sparkSession = SparkOps.initSparkSession(conf)
 
     val datasetPath = basePath + "sample_movielens_ratings.txt"
-    val rmseScore = sparkSession.flatMap( sess =>
-      new RecommenderOps(datasetPath).evaluationOp.run(sess)
-    )
+    val rmseScore = sparkSession.flatMap(sess =>
+      new RecommenderOps(datasetPath).evaluationOp.run(sess))
     rmseScore match {
       case \/-(s) => logger.info("RMSE: {}", s)
       case -\/(e) => logger.error(renderError(e))
     }
     sparkSession.map(_.stop())
   }
-
 
 }
