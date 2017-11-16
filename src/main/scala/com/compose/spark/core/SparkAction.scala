@@ -5,7 +5,7 @@ import org.apache.spark.sql.SparkSession
 
 import scalaz._
 
-trait SparkAction[+A] {
+sealed trait SparkAction[+A] {
   def run(session: SparkSession): SparkError \/ A
 
   def map[B](f: A => B): SparkAction[B] =
