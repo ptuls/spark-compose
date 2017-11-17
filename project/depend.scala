@@ -3,6 +3,7 @@ import sbt._
 object Depend {
   lazy val beustVersion = "1.7.2"
   lazy val lazyLoggerVersion = "3.7.2"
+  lazy val logBackVersion = "1.1.2"
   lazy val scalazVersion = "7.2.6"
   lazy val sparkVersion = "2.1.1"
 
@@ -13,7 +14,9 @@ object Depend {
     Seq("com.beust" % "jcommander").map(_ % beustVersion)
 
   lazy val lazyLogging = Seq(
-    "com.typesafe.scala-logging" % "scala-logging_2.11" % s"$lazyLoggerVersion")
+    "com.typesafe.scala-logging" % "scala-logging_2.11" % s"$lazyLoggerVersion",
+    "ch.qos.logback" % "logback-classic" % s"$logBackVersion"
+  )
 
   lazy val scalaz = Seq(
     "org.scalaz" %% "scalaz-core",

@@ -50,7 +50,6 @@ object WordCountExampleMain extends LazyLogging {
   private val basePath = "src/main/resources/word-count/"
 
   def main(args: Array[String]): Unit = {
-    Logger.getLogger("org").setLevel(Level.ERROR)
     val path = basePath + "test.txt"
 
     /* resource setup is separated from computation */

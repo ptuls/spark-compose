@@ -76,8 +76,6 @@ object RecommenderExampleMain extends LazyLogging {
   private val basePath: String = "src/main/resources/recommender/"
 
   def main(args: Array[String]): Unit = {
-    Logger.getLogger("org").setLevel(Level.ERROR)
-
     /* resource setup is separated from computation */
     val conf =
       new SparkConf()
