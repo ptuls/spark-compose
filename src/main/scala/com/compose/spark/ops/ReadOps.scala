@@ -6,6 +6,12 @@ import org.apache.spark.sql._
 import scalaz._
 
 object ReadOps {
+  def readCsv(fileName: String,
+               sess: SparkSession): SparkError \/ Dataset[Row] = {
+    \/.fromTryCatchNonFatal(sess.read.csv(fileName))
+      .leftMap[SparkError](e => FileReadError(e.getMessage))
+  }
+
   def readParquet(fileName: String,
                   sess: SparkSession): SparkError \/ Dataset[Row] = {
     \/.fromTryCatchNonFatal(sess.read.parquet(fileName))
