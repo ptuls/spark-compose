@@ -33,8 +33,8 @@ class RecommenderOps(datasetPath: String) extends Serializable {
       splitArray <- splitDatasetOp(0.8)
       Array(trainDataset, testDataset) = splitArray
     } yield {
-      val model = trainingOp(trainDataset)
       val avgRating = getAvgRating(trainDataset)
+      val model = trainingOp(trainDataset)
       testingOp(model, testDataset, avgRating)
     }
 
@@ -50,7 +50,7 @@ class RecommenderOps(datasetPath: String) extends Serializable {
   /* non-negative matrix factorization collaborative filtering */
   def trainingOp(trainingDataset: Dataset[Rating]): ALSModel = {
     val als = new ALS()
-      .setMaxIter(20)
+      .setMaxIter(5)
       .setRegParam(0.01)
       .setUserCol("userId")
       .setItemCol("movieId")
