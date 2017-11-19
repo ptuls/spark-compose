@@ -34,7 +34,8 @@ class RecommenderOps(datasetPath: String) extends Serializable {
       Array(trainDataset, testDataset) = splitArray
     } yield {
       val model = trainingOp(trainDataset)
-      testingOp(model, testDataset)
+      val avgRating = getAvgRating(trainDataset)
+      testingOp(model, testDataset, avgRating)
     }
 
   def evaluationOp: SparkAction[Double] =
@@ -49,7 +50,7 @@ class RecommenderOps(datasetPath: String) extends Serializable {
   /* non-negative matrix factorization collaborative filtering */
   def trainingOp(trainingDataset: Dataset[Rating]): ALSModel = {
     val als = new ALS()
-      .setMaxIter(5)
+      .setMaxIter(20)
       .setRegParam(0.01)
       .setUserCol("userId")
       .setItemCol("movieId")
@@ -58,17 +59,30 @@ class RecommenderOps(datasetPath: String) extends Serializable {
     als.fit(trainingDataset)
   }
 
-  def testingOp(model: ALSModel, testDataset: Dataset[Rating]): Dataset[Row] =
-    model.transform(testDataset)
+  def testingOp(model: ALSModel,
+                testDataset: Dataset[Rating],
+                avgRating: Double): Dataset[Row] = {
+    val rawPredictions = model.transform(testDataset)
+    rawPredictions.na.fill(avgRating)
+  }
 
   def parseRating(str: String): Rating = {
-    val fields = str.split("::")
+    val fields = str.split(",")
     assert(fields.size == 4)
     Rating(fields(0).toInt,
            fields(1).toInt,
            fields(2).toFloat,
            fields(3).toLong)
   }
+
+  def getAvgRating(dataset: Dataset[Rating]): Double =
+    dataset
+      .select("rating")
+      .groupBy("rating")
+      .avg("rating")
+      .first
+      .getAs[Float](0)
+      .toDouble
 }
 
 object RecommenderExampleMain extends LazyLogging {
@@ -78,11 +92,11 @@ object RecommenderExampleMain extends LazyLogging {
     /* resource setup is separated from computation */
     val conf =
       new SparkConf()
-        .setMaster("local[4]")
+        .setMaster("local[*]")
         .setAppName("Basic recommender")
     val sparkSession = SparkOps.initSparkSession(conf)
 
-    val datasetPath = basePath + "sample_movielens_ratings.txt"
+    val datasetPath = basePath + "sample_movielens_rating.txt"
     val rmseScore = sparkSession.flatMap(sess =>
       new RecommenderOps(datasetPath).evaluationOp.run(sess))
     rmseScore match {
