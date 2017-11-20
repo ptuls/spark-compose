@@ -2,7 +2,7 @@ import Depend._
 
 lazy val buildSettings = Seq(
   name := "spark-examples",
-  organization := "com.canva",
+  organization := "com.compose",
   version := "0.0.1",
   scalaVersion := "2.11.8",
   libraryDependencies := Depend.dependencies,
