@@ -14,19 +14,27 @@ case class LightBulb(lightStatus: LightStatus) {
   override def toString: String = s"light bulb: ${this.lightStatus.toString}"
 }
 
+/***
+  * Simple state monad example: flip a switch to change the state of the lightbulb.
+  * The main idea is that the state is encapsulated in the State monad, that the
+  * object representing the lightbulb does not have to be mutated.
+  */
 object LightBulbMain {
   def main(args: Array[String]): Unit = {
-    println(flipSwitch(LightSwitch).run(LightBulb(Off))._1)
-    println(flipSwitch(LightSwitch).run(LightBulb(On))._1)
+    val initState = LightBulb(Off)
+    val newState = flipSwitch(LightSwitch).run(initState)._1
+    println(initState)
+    println(newState)
+    println(flipSwitch(LightSwitch).run(newState)._1)
   }
 
   def flipSwitch(s: Switch): State[LightBulb, Unit] = {
     for {
       currStatus <- get[LightBulb]
       newStatus <- if (currStatus.lightStatus == On) {
-        put(currStatus.copy(lightStatus = Off))
+        put(currStatus.copy(Off))
       } else {
-        put(currStatus.copy(lightStatus = On))
+        put(currStatus.copy(On))
       }
     } yield newStatus
   }
