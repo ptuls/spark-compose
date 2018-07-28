@@ -5,7 +5,7 @@ object Depend {
   lazy val lazyLoggerVersion = "3.7.2"
   lazy val logBackVersion = "1.1.2"
   lazy val scalazVersion = "7.2.6"
-  lazy val sparkVersion = "2.1.1"
+  lazy val sparkVersion = "2.3.0"
 
   lazy val betterFiles = Seq(
     "com.github.pathikrit" %% "better-files" % "2.17.1")
