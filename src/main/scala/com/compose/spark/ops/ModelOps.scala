@@ -1,6 +1,6 @@
-package com.compose.ds.ops
+package com.compose.spark.ops
 
-import com.compose.ds.ops.Context.{DataSet, State}
+import com.compose.spark.ops.Context.{DataSet, State}
 import org.apache.spark.sql.Dataset
 
 object Context {
