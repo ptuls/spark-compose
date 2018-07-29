@@ -11,7 +11,7 @@ case object On extends LightStatus
 case object Off extends LightStatus
 
 case class LightBulb(lightStatus: LightStatus) {
-  override def toString: String = s"light bulb: ${this.lightStatus.toString}"
+  override def toString: String = s"Light bulb state: ${this.lightStatus.toString}"
 }
 
 /***
